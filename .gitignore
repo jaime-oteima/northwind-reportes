@@ -1,0 +1,11 @@
+# Visual Studio and local build output
+.vs/
+bin/
+obj/
+*.user
+*.suo
+
+# Local connection settings and credentials
+appsettings.Local.json
+secrets.json
+.env

@@ -1,0 +1,36 @@
+@page "/productos"
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+@using NorthwindReportes.Modelos
+@inject NorthwindReportes.Datos.ProductosAdo Datos
+<PageTitle>Productos</PageTitle>
+<h1>Productos</h1>
+<p>Catálogo de productos, categorías y existencias.</p>
+<button class="btn btn-primary mb-3" @onclick="CargarAsync" disabled="@cargando">Actualizar</button>
+@if (cargando) { <p role="status">Consultando productos...</p> }
+else if (error != "") { <p role="alert" class="alert alert-danger">@error</p> }
+else
+{
+    <p role="status">@productos.Count productos</p>
+    <div class="table-responsive"><table class="table table-striped">
+        <thead><tr><th>ID</th><th>Producto</th><th>Categoría</th><th>Existencias</th><th>Activo</th></tr></thead>
+        <tbody>@foreach (Producto producto in productos)
+        {
+            <tr><td>@producto.Id</td><td>@producto.Nombre</td><td>@producto.Categoria</td><td>@producto.Existencias</td><td>@(producto.Activo ? "Sí" : "No")</td></tr>
+        }</tbody>
+    </table></div>
+}
+@code {
+    private List<Producto> productos = new List<Producto>();
+    private bool cargando;
+    private string error = "";
+    protected override async Task OnInitializedAsync() { await CargarAsync(); }
+    private async Task CargarAsync()
+    {
+        cargando = true;
+        error = "";
+        productos.Clear();
+        try { productos = await Datos.ListarAsync(); }
+        catch (Exception) { error = "No se pudieron cargar los productos. Vuelve a intentarlo."; }
+        finally { cargando = false; }
+    }
+}
